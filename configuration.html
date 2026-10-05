@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Configuration de mon objectif</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 30px 20px;
+  font-family: Arial, sans-serif;
+  background: #EDE8E0;
+  color: #29251F;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+}
+
+h1 {
+  margin-top: 0;
+  font-size: 24px;
+}
+
+.intro {
+  color: #817A70;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+label {
+  display: block;
+  margin-top: 18px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #D8D1C7;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+button {
+  width: 100%;
+  margin-top: 25px;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  background: #8B6F47;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.resultat {
+  display: none;
+  margin-top: 25px;
+  padding: 15px;
+  background: #EDE8E0;
+  border-radius: 8px;
+}
+
+.resultat p {
+  font-size: 13px;
+  color: #817A70;
+}
+
+.url {
+  word-break: break-all;
+  font-size: 12px;
+  background: white;
+  padding: 10px;
+  border-radius: 6px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Configurer mon objectif</h1>
+
+  <div class="intro">
+    Renseigne les informations de ta course pour générer ton widget de progression.
+  </div>
+
+  <label for="course">Nom de l'objectif</label>
+  <input type="text" id="course" placeholder="Ex : Tour des Glaciers de la Vanoise">
+
+  <label for="distance">Distance (km)</label>
+  <input type="number" id="distance" placeholder="Ex : 73">
+
+  <label for="dplus">D+ (m)</label>
+  <input type="number" id="dplus" placeholder="Ex : 3800">
+
+  <label for="dmoins">D- (m)</label>
+  <input type="number" id="dmoins" placeholder="Ex : 3800">
+
+  <label for="debut">Début de préparation</label>
+  <input type="date" id="debut">
+
+  <label for="objectif">Date de course</label>
+  <input type="date" id="objectif">
+
+  <button onclick="genererWidget()">
+    Générer mon widget
+  </button>
+
+  <div class="resultat" id="resultat">
+
+    <strong>Ton widget est prêt 🎉</strong>
+
+    <p>
+      Copie ce lien et utilise-le dans Notion avec /embed.
+    </p>
+
+    <div class="url" id="url"></div>
+
+    <button onclick="copierURL()">
+      Copier le lien
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+function genererWidget() {
+
+  const course = document.getElementById("course").value;
+  const distance = document.getElementById("distance").value;
+  const dplus = document.getElementById("dplus").value;
+  const dmoins = document.getElementById("dmoins").value;
+  const debut = document.getElementById("debut").value;
+  const objectif = document.getElementById("objectif").value;
+
+  if (!course || !distance || !dplus || !dmoins || !debut || !objectif) {
+    alert("Merci de remplir tous les champs.");
+    return;
+  }
+
+  const baseURL = window.location.origin + window.location.pathname.replace("configuration.html", "");
+
+  const params = new URLSearchParams({
+    course: course,
+    distance: distance,
+    dplus: dplus,
+    dmoins: dmoins,
+    debut: debut,
+    objectif: objectif
+  });
+
+  const url = baseURL + "index.html?" + params.toString();
+
+  document.getElementById("url").textContent = url;
+
+  document.getElementById("resultat").style.display = "block";
+}
+
+function copierURL() {
+
+  const url = document.getElementById("url").textContent;
+
+  navigator.clipboard.writeText(url);
+
+  alert("Lien copié !");
+}
+
+</script>
+
+</body>
+</html>
