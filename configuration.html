@@ -8,6 +8,8 @@
 
 <title>Configuration de mon objectif</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 
 * {
@@ -277,7 +279,17 @@ Générer mon widget
 
 <script>
 
-function genererWidget() {
+const SUPABASE_URL = "https://qogovmyyjjjukxmqumtl.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_PO9CHcn3ke4VQyqQszCMcg_Csc-x2e_";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+async function genererWidget() {
 
   const course =
     document.getElementById("course").value.trim();
@@ -324,7 +336,7 @@ function genererWidget() {
   }
 
 
-  // Vérification des valeurs
+  // Vérification de la distance
 
   if (Number(distance) <= 0) {
 
@@ -357,38 +369,74 @@ function genererWidget() {
   }
 
 
+  // Enregistrement dans Supabase
+
+  const { data, error } = await supabaseClient
+
+    .from("objectifs")
+
+    .insert([
+      {
+        course: course,
+        distance: Number(distance),
+        dplus: Number(dplus),
+        dmoins: Number(dmoins),
+        date_debut: debut,
+        date_objectif: objectif
+      }
+    ])
+
+    .select()
+
+    .single();
+
+
+  // Gestion de l'erreur Supabase
+
+  if (error) {
+
+    console.error(
+      "Erreur Supabase :",
+      error
+    );
+
+    erreur.textContent =
+      "Impossible d'enregistrer l'objectif. Vérifie la console.";
+
+    erreur.style.display = "block";
+
+    return;
+  }
+
+
   // Affichage de l'aperçu
 
   document.getElementById("apercu-titre")
     .textContent = course;
 
+
   document.getElementById("apercu-details")
     .textContent =
       distance + " km · " +
-      Number(dplus).toLocaleString("fr-FR") + " m D+ · " +
-      Number(dmoins).toLocaleString("fr-FR") + " m D-";
-
-
-  const debutFormate =
-    dateDebut.toLocaleDateString("fr-FR");
-
-  const objectifFormate =
-    dateObjectif.toLocaleDateString("fr-FR");
+      Number(dplus).toLocaleString("fr-FR") +
+      " m D+ · " +
+      Number(dmoins).toLocaleString("fr-FR") +
+      " m D-";
 
 
   document.getElementById("apercu-dates")
     .textContent =
       "Préparation : " +
-      debutFormate +
+      dateDebut.toLocaleDateString("fr-FR") +
       " → " +
-      objectifFormate;
+      dateObjectif.toLocaleDateString("fr-FR");
 
 
   document.getElementById("apercu")
     .style.display = "block";
 
 
-  // Création de l'URL
+  // Création du lien permanent
 
   const baseURL =
     window.location.origin +
@@ -398,27 +446,10 @@ function genererWidget() {
     );
 
 
-  const params = new URLSearchParams({
-
-    course: course,
-
-    distance: distance,
-
-    dplus: dplus,
-
-    dmoins: dmoins,
-
-    debut: debut,
-
-    objectif: objectif
-
-  });
-
-
   const url =
     baseURL +
-    "index.html?" +
-    params.toString();
+    "index.html?id=" +
+    data.id;
 
 
   document.getElementById("url")
@@ -427,6 +458,12 @@ function genererWidget() {
 
   document.getElementById("resultat")
     .style.display = "block";
+
+
+  console.log(
+    "Objectif créé :",
+    data
+  );
 
 }
 
