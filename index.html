@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background: transparent;
+}
+
+/* =========================
+   PERSONNALISATION
+   ========================= */
+
+:root {
+    --couleur-principale: #8B6F47;
+    --couleur-fond: #EDE8E0;
+    --couleur-texte: #29251F;
+    --couleur-secondaire: #817A70;
+
+    --hauteur-barre: 14px;
+    --arrondi: 20px;
+}
+
+
+/* =========================
+   WIDGET
+   ========================= */
+
+.objectif {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+}
+
+
+/* =========================
+   ENTETE
+   ========================= */
+
+.entete {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.partie-gauche {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.titre {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--couleur-texte);
+}
+
+.details {
+    display: flex;
+    gap: 9px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--couleur-secondaire);
+}
+
+.pourcentage {
+    flex-shrink: 0;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--couleur-principale);
+}
+
+
+/* =========================
+   BARRE
+   ========================= */
+
+.barre-container {
+    width: 100%;
+    height: var(--hauteur-barre);
+    background: var(--couleur-fond);
+    border-radius: var(--arrondi);
+    overflow: hidden;
+}
+
+.barre {
+    height: 100%;
+    width: 0%;
+    background: var(--couleur-principale);
+    border-radius: var(--arrondi);
+    transition: width 1s ease;
+}
+
+
+/* =========================
+   TEMPS RESTANT
+   ========================= */
+
+.temps-restant {
+    margin-top: 9px;
+    font-size: 13px;
+    color: var(--couleur-secondaire);
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 12px;
+    }
+
+    .entete {
+        align-items: flex-start;
+    }
+
+    .partie-gauche {
+        display: block;
+    }
+
+    .titre {
+        font-size: 15px;
+    }
+
+    .details {
+        margin-top: 5px;
+        gap: 7px;
+        flex-wrap: wrap;
+    }
+
+    .pourcentage {
+        font-size: 23px;
+    }
+
+    .temps-restant {
+        font-size: 12px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="objectif">
+
+    <div class="entete">
+
+        <div class="partie-gauche">
+
+            <div class="titre">
+                Tour des Glaciers de la Vanoise
+            </div>
+
+            <div class="details">
+                <span>73 km</span>
+                <span>3 800 m D+</span>
+                <span>3 800 m D-</span>
+            </div>
+
+        </div>
+
+        <div class="pourcentage" id="pourcentage">
+            0%
+        </div>
+
+    </div>
+
+
+    <div class="barre-container">
+
+        <div class="barre" id="barre"></div>
+
+    </div>
+
+
+    <div class="temps-restant" id="temps-restant">
+        Calcul...
+    </div>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   CONFIGURATION
+   ========================================== */
+
+const objectif = {
+
+    titre: "Tour des Glaciers de la Vanoise",
+
+    dateDebut: "2026-11-02",
+
+    dateObjectif: "2027-07-04"
+
+};
+
+
+/* ==========================================
+   CALCUL PROGRESSION
+   ========================================== */
+
+function calculerProgression() {
+
+    const maintenant = new Date();
+
+    const debut = new Date(
+        objectif.dateDebut + "T00:00:00"
+    );
+
+    const objectifDate = new Date(
+        objectif.dateObjectif + "T00:00:00"
+    );
+
+    const dureeTotale =
+        objectifDate.getTime() -
+        debut.getTime();
+
+    const tempsEcoule =
+        maintenant.getTime() -
+        debut.getTime();
+
+    let progression =
+        (tempsEcoule / dureeTotale) * 100;
+
+    progression = Math.min(
+        Math.max(progression, 0),
+        100
+    );
+
+    return progression;
+}
+
+
+/* ==========================================
+   TEMPS RESTANT
+   ========================================== */
+
+function calculerTempsRestant() {
+
+    const maintenant = new Date();
+
+    const objectifDate = new Date(
+        objectif.dateObjectif + "T00:00:00"
+    );
+
+    const difference =
+        objectifDate.getTime() -
+        maintenant.getTime();
+
+    if (difference <= 0) {
+        return "Objectif atteint";
+    }
+
+    const jours = Math.ceil(
+        difference /
+        (1000 * 60 * 60 * 24)
+    );
+
+    if (jours < 30) {
+
+        return jours +
+            (jours > 1
+                ? " jours restants"
+                : " jour restant");
+    }
+
+    const mois =
+        Math.floor(jours / 30);
+
+    const joursRestants =
+        jours % 30;
+
+    if (joursRestants === 0) {
+
+        return mois +
+            (mois > 1
+                ? " mois restants"
+                : " mois restant");
+    }
+
+    return mois +
+        " mois · " +
+        joursRestants +
+        (joursRestants > 1
+            ? " jours restants"
+            : " jour restant");
+}
+
+
+/* ==========================================
+   MISE À JOUR
+   ========================================== */
+
+function mettreAJour() {
+
+    const progression =
+        calculerProgression();
+
+    document.getElementById(
+        "pourcentage"
+    ).textContent =
+        Math.round(progression) + "%";
+
+    document.getElementById(
+        "barre"
+    ).style.width =
+        progression + "%";
+
+    document.getElementById(
+        "temps-restant"
+    ).textContent =
+        calculerTempsRestant();
+}
+
+
+/* ==========================================
+   LANCEMENT
+   ========================================== */
+
+mettreAJour();
+
+setInterval(
+    mettreAJour,
+    60 * 60 * 1000
+);
+
+</script>
+
+</body>
+</html>
