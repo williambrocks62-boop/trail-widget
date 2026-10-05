@@ -226,7 +226,14 @@ async function chargerObjectif() {
     console.error("Erreur Supabase :", error);
     return;
   }
+    
+document.querySelector(".titre").textContent = data.course;
 
+document.querySelector(".details").innerHTML = `
+  <span>${data.distance} km</span>
+  <span>${Number(data.dplus).toLocaleString("fr-FR")} m D+</span>
+  <span>${Number(data.dmoins).toLocaleString("fr-FR")} m D-</span>
+`;
   console.log("Objectif récupéré :", data);
 }
     
