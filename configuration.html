@@ -146,46 +146,107 @@ button:hover {
 
 <script>
 
-function genererWidget() {
+const params = new URLSearchParams(window.location.search);
 
-  const course = document.getElementById("course").value;
-  const distance = document.getElementById("distance").value;
-  const dplus = document.getElementById("dplus").value;
-  const dmoins = document.getElementById("dmoins").value;
-  const debut = document.getElementById("debut").value;
-  const objectif = document.getElementById("objectif").value;
+const objectif = {
+  titre: params.get("course") || "Tour des Glaciers de la Vanoise",
+  distance: params.get("distance") || "73",
+  dplus: params.get("dplus") || "3800",
+  dmoins: params.get("dmoins") || "3800",
+  dateDebut: params.get("debut") || "2026-11-02",
+  dateObjectif: params.get("objectif") || "2027-07-04"
+};
 
-  if (!course || !distance || !dplus || !dmoins || !debut || !objectif) {
-    alert("Merci de remplir tous les champs.");
-    return;
+
+// Affichage des informations de la course
+
+document.querySelector(".titre").textContent = objectif.titre;
+
+document.querySelector(".details").innerHTML = `
+  <span>${objectif.distance} km</span>
+  <span>${Number(objectif.dplus).toLocaleString("fr-FR")} m D+</span>
+  <span>${Number(objectif.dmoins).toLocaleString("fr-FR")} m D-</span>
+`;
+
+
+// Calcul de la progression
+
+function calculerProgression() {
+
+  const maintenant = new Date();
+
+  const debut = new Date(objectif.dateDebut + "T00:00:00");
+
+  const objectifDate = new Date(objectif.dateObjectif + "T00:00:00");
+
+  const dureeTotale = objectifDate.getTime() - debut.getTime();
+
+  const tempsEcoule = maintenant.getTime() - debut.getTime();
+
+  let progression = (tempsEcoule / dureeTotale) * 100;
+
+  progression = Math.min(Math.max(progression, 0), 100);
+
+  return progression;
+}
+
+
+// Calcul du temps restant
+
+function calculerTempsRestant() {
+
+  const maintenant = new Date();
+
+  const objectifDate = new Date(objectif.dateObjectif + "T00:00:00");
+
+  const difference = objectifDate.getTime() - maintenant.getTime();
+
+  if (difference <= 0) {
+    return "Objectif atteint";
   }
 
-  const baseURL = window.location.origin + window.location.pathname.replace("configuration.html", "");
+  const jours = Math.ceil(
+    difference / (1000 * 60 * 60 * 24)
+  );
 
-  const params = new URLSearchParams({
-    course: course,
-    distance: distance,
-    dplus: dplus,
-    dmoins: dmoins,
-    debut: debut,
-    objectif: objectif
-  });
+  if (jours < 30) {
+    return jours + (jours > 1 ? " jours restants" : " jour restant");
+  }
 
-  const url = baseURL + "index.html?" + params.toString();
+  const mois = Math.floor(jours / 30);
 
-  document.getElementById("url").textContent = url;
+  const joursRestants = jours % 30;
 
-  document.getElementById("resultat").style.display = "block";
+  if (joursRestants === 0) {
+    return mois + (mois > 1 ? " mois restants" : " mois restant");
+  }
+
+  return mois + " mois · " +
+         joursRestants +
+         (joursRestants > 1 ? " jours restants" : " jour restant");
 }
 
-function copierURL() {
 
-  const url = document.getElementById("url").textContent;
+// Mise à jour du widget
 
-  navigator.clipboard.writeText(url);
+function mettreAJour() {
 
-  alert("Lien copié !");
+  const progression = calculerProgression();
+
+  document.getElementById("pourcentage").textContent =
+    Math.round(progression) + "%";
+
+  document.getElementById("barre").style.width =
+    progression + "%";
+
+  document.getElementById("temps-restant").textContent =
+    calculerTempsRestant();
 }
+
+
+mettreAJour();
+
+setInterval(mettreAJour, 60 * 60 * 1000);
 
 </script>
 
