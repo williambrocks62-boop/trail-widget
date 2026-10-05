@@ -209,6 +209,24 @@ const params = new URLSearchParams(window.location.search);
 
 const objectifId = params.get("id");
 
+async function chargerObjectif() {
+
+  if (!objectifId) return;
+
+  const { data, error } = await supabaseClient
+    .from("objectifs")
+    .select("*")
+    .eq("id", objectifId)
+    .single();
+
+  if (error) {
+    console.error("Erreur Supabase :", error);
+    return;
+  }
+
+  console.log("Objectif récupéré :", data);
+}
+    
 let titre = "Tour des Glaciers de la Vanoise";
 let distance = "73";
 let dplus = "3800";
