@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Configuration de mon objectif</title>
 
 <style>
+
 * {
   box-sizing: border-box;
 }
@@ -20,7 +23,7 @@ body {
 }
 
 .container {
-  max-width: 600px;
+  max-width: 620px;
   margin: auto;
   background: white;
   padding: 30px;
@@ -28,14 +31,15 @@ body {
 }
 
 h1 {
-  margin-top: 0;
+  margin: 0 0 8px 0;
   font-size: 24px;
 }
 
 .intro {
   color: #817A70;
   font-size: 14px;
-  margin-bottom: 25px;
+  line-height: 1.5;
+  margin-bottom: 28px;
 }
 
 label {
@@ -52,6 +56,12 @@ input {
   border: 1px solid #D8D1C7;
   border-radius: 8px;
   font-size: 15px;
+  font-family: inherit;
+}
+
+input:focus {
+  outline: none;
+  border-color: #8B6F47;
 }
 
 button {
@@ -71,17 +81,58 @@ button:hover {
   opacity: 0.9;
 }
 
+.erreur {
+  display: none;
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #F5E4E0;
+  color: #8A4034;
+  font-size: 13px;
+}
+
+.apercu {
+  display: none;
+  margin-top: 25px;
+  padding: 18px;
+  border-radius: 10px;
+  background: #EDE8E0;
+}
+
+.apercu-titre {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.apercu-details {
+  font-size: 13px;
+  color: #817A70;
+}
+
+.apercu-dates {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #817A70;
+}
+
 .resultat {
   display: none;
   margin-top: 25px;
-  padding: 15px;
-  background: #EDE8E0;
-  border-radius: 8px;
+  padding: 18px;
+  background: #F2EFEA;
+  border-radius: 10px;
+}
+
+.resultat-titre {
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
 .resultat p {
   font-size: 13px;
   color: #817A70;
+  line-height: 1.5;
 }
 
 .url {
@@ -90,104 +141,310 @@ button:hover {
   background: white;
   padding: 10px;
   border-radius: 6px;
+  border: 1px solid #D8D1C7;
 }
+
+.bouton-secondaire {
+  background: #29251F;
+}
+
 </style>
+
 </head>
+
 
 <body>
 
 <div class="container">
 
-  <h1>Configurer mon objectif</h1>
+<h1>Configurer mon objectif</h1>
 
-  <div class="intro">
-    Renseigne les informations de ta course pour générer ton widget de progression.
-  </div>
+<div class="intro">
+Renseigne les informations de ta course pour générer ton widget de progression.
+</div>
 
-  <label for="course">Nom de l'objectif</label>
-  <input type="text" id="course" placeholder="Ex : Tour des Glaciers de la Vanoise">
 
-  <label for="distance">Distance (km)</label>
-  <input type="number" id="distance" placeholder="Ex : 73">
+<label for="course">
+Nom de l'objectif
+</label>
 
-  <label for="dplus">D+ (m)</label>
-  <input type="number" id="dplus" placeholder="Ex : 3800">
+<input
+  type="text"
+  id="course"
+  placeholder="Ex : Tour des Glaciers de la Vanoise"
+>
 
-  <label for="dmoins">D- (m)</label>
-  <input type="number" id="dmoins" placeholder="Ex : 3800">
 
-  <label for="debut">Début de préparation</label>
-  <input type="date" id="debut">
+<label for="distance">
+Distance (km)
+</label>
 
-  <label for="objectif">Date de course</label>
-  <input type="date" id="objectif">
+<input
+  type="number"
+  id="distance"
+  placeholder="Ex : 73"
+  min="1"
+>
 
-  <button onclick="genererWidget()">
-    Générer mon widget
-  </button>
 
-  <div class="resultat" id="resultat">
+<label for="dplus">
+D+ (m)
+</label>
 
-    <strong>Ton widget est prêt 🎉</strong>
+<input
+  type="number"
+  id="dplus"
+  placeholder="Ex : 3800"
+  min="0"
+>
 
-    <p>
-      Copie ce lien et utilise-le dans Notion avec /embed.
-    </p>
 
-    <div class="url" id="url"></div>
+<label for="dmoins">
+D- (m)
+</label>
 
-    <button onclick="copierURL()">
-      Copier le lien
-    </button>
+<input
+  type="number"
+  id="dmoins"
+  placeholder="Ex : 3800"
+  min="0"
+>
 
-  </div>
+
+<label for="debut">
+Début de préparation
+</label>
+
+<input
+  type="date"
+  id="debut"
+>
+
+
+<label for="objectif">
+Date de course
+</label>
+
+<input
+  type="date"
+  id="objectif"
+>
+
+
+<div class="erreur" id="erreur"></div>
+
+
+<button onclick="genererWidget()">
+Générer mon widget
+</button>
+
+
+<div class="apercu" id="apercu">
+
+  <div class="apercu-titre" id="apercu-titre"></div>
+
+  <div class="apercu-details" id="apercu-details"></div>
+
+  <div class="apercu-dates" id="apercu-dates"></div>
 
 </div>
+
+
+<div class="resultat" id="resultat">
+
+  <div class="resultat-titre">
+  ✅ Ton widget est prêt
+  </div>
+
+  <p>
+  Copie le lien ci-dessous et utilise-le dans Notion avec la fonction /embed.
+  </p>
+
+  <div class="url" id="url"></div>
+
+  <button
+    class="bouton-secondaire"
+    onclick="copierURL()"
+  >
+  📋 Copier le lien
+  </button>
+
+</div>
+
+
+</div>
+
 
 <script>
 
 function genererWidget() {
 
-  const course = document.getElementById("course").value;
-  const distance = document.getElementById("distance").value;
-  const dplus = document.getElementById("dplus").value;
-  const dmoins = document.getElementById("dmoins").value;
-  const debut = document.getElementById("debut").value;
-  const objectif = document.getElementById("objectif").value;
+  const course =
+    document.getElementById("course").value.trim();
 
-  if (!course || !distance || !dplus || !dmoins || !debut || !objectif) {
-    alert("Merci de remplir tous les champs.");
+  const distance =
+    document.getElementById("distance").value;
+
+  const dplus =
+    document.getElementById("dplus").value;
+
+  const dmoins =
+    document.getElementById("dmoins").value;
+
+  const debut =
+    document.getElementById("debut").value;
+
+  const objectif =
+    document.getElementById("objectif").value;
+
+
+  const erreur =
+    document.getElementById("erreur");
+
+  erreur.style.display = "none";
+
+
+  // Vérification des champs
+
+  if (
+    !course ||
+    !distance ||
+    !dplus ||
+    !dmoins ||
+    !debut ||
+    !objectif
+  ) {
+
+    erreur.textContent =
+      "Merci de remplir tous les champs.";
+
+    erreur.style.display = "block";
+
     return;
   }
 
-  const baseURL = window.location.origin + window.location.pathname.replace("configuration.html", "");
+
+  // Vérification des valeurs
+
+  if (Number(distance) <= 0) {
+
+    erreur.textContent =
+      "La distance doit être supérieure à 0.";
+
+    erreur.style.display = "block";
+
+    return;
+  }
+
+
+  // Vérification des dates
+
+  const dateDebut =
+    new Date(debut + "T00:00:00");
+
+  const dateObjectif =
+    new Date(objectif + "T00:00:00");
+
+
+  if (dateObjectif <= dateDebut) {
+
+    erreur.textContent =
+      "La date de course doit être postérieure au début de préparation.";
+
+    erreur.style.display = "block";
+
+    return;
+  }
+
+
+  // Affichage de l'aperçu
+
+  document.getElementById("apercu-titre")
+    .textContent = course;
+
+  document.getElementById("apercu-details")
+    .textContent =
+      distance + " km · " +
+      Number(dplus).toLocaleString("fr-FR") + " m D+ · " +
+      Number(dmoins).toLocaleString("fr-FR") + " m D-";
+
+
+  const debutFormate =
+    dateDebut.toLocaleDateString("fr-FR");
+
+  const objectifFormate =
+    dateObjectif.toLocaleDateString("fr-FR");
+
+
+  document.getElementById("apercu-dates")
+    .textContent =
+      "Préparation : " +
+      debutFormate +
+      " → " +
+      objectifFormate;
+
+
+  document.getElementById("apercu")
+    .style.display = "block";
+
+
+  // Création de l'URL
+
+  const baseURL =
+    window.location.origin +
+    window.location.pathname.replace(
+      "configuration.html",
+      ""
+    );
+
 
   const params = new URLSearchParams({
+
     course: course,
+
     distance: distance,
+
     dplus: dplus,
+
     dmoins: dmoins,
+
     debut: debut,
+
     objectif: objectif
+
   });
 
-  const url = baseURL + "index.html?" + params.toString();
 
-  document.getElementById("url").textContent = url;
+  const url =
+    baseURL +
+    "index.html?" +
+    params.toString();
 
-  document.getElementById("resultat").style.display = "block";
+
+  document.getElementById("url")
+    .textContent = url;
+
+
+  document.getElementById("resultat")
+    .style.display = "block";
+
 }
+
 
 function copierURL() {
 
-  const url = document.getElementById("url").textContent;
+  const url =
+    document.getElementById("url").textContent;
 
   navigator.clipboard.writeText(url);
 
   alert("Lien copié !");
+
 }
 
 </script>
 
+
 </body>
+
 </html>
