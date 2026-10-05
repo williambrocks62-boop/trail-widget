@@ -194,153 +194,91 @@ body {
     </div>
 
 </div>
-
-
+    
 <script>
 
-/* ==========================================
-   CONFIGURATION
-   ========================================== */
+const params = new URLSearchParams(window.location.search);
 
-const objectif = {
+const titre = params.get("course") || "Tour des Glaciers de la Vanoise";
+const distance = params.get("distance") || "73";
+const dplus = params.get("dplus") || "3800";
+const dmoins = params.get("dmoins") || "3800";
+const dateDebut = params.get("debut") || "2026-11-02";
+const dateObjectif = params.get("objectif") || "2027-07-04";
 
-    titre: "Tour des Glaciers de la Vanoise",
+document.querySelector(".titre").textContent = titre;
 
-    dateDebut: "2026-11-02",
-
-    dateObjectif: "2027-07-04"
-
-};
-
-
-/* ==========================================
-   CALCUL PROGRESSION
-   ========================================== */
+document.querySelector(".details").innerHTML = `
+  <span>${distance} km</span>
+  <span>${Number(dplus).toLocaleString("fr-FR")} m D+</span>
+  <span>${Number(dmoins).toLocaleString("fr-FR")} m D-</span>
+`;
 
 function calculerProgression() {
 
-    const maintenant = new Date();
+  const maintenant = new Date();
 
-    const debut = new Date(
-        objectif.dateDebut + "T00:00:00"
-    );
+  const debut = new Date(dateDebut + "T00:00:00");
+  const objectif = new Date(dateObjectif + "T00:00:00");
 
-    const objectifDate = new Date(
-        objectif.dateObjectif + "T00:00:00"
-    );
+  const total = objectif - debut;
+  const ecoule = maintenant - debut;
 
-    const dureeTotale =
-        objectifDate.getTime() -
-        debut.getTime();
+  let progression = (ecoule / total) * 100;
 
-    const tempsEcoule =
-        maintenant.getTime() -
-        debut.getTime();
+  progression = Math.min(Math.max(progression, 0), 100);
 
-    let progression =
-        (tempsEcoule / dureeTotale) * 100;
-
-    progression = Math.min(
-        Math.max(progression, 0),
-        100
-    );
-
-    return progression;
+  return progression;
 }
-
-
-/* ==========================================
-   TEMPS RESTANT
-   ========================================== */
 
 function calculerTempsRestant() {
 
-    const maintenant = new Date();
+  const maintenant = new Date();
+  const objectif = new Date(dateObjectif + "T00:00:00");
 
-    const objectifDate = new Date(
-        objectif.dateObjectif + "T00:00:00"
-    );
+  const difference = objectif - maintenant;
 
-    const difference =
-        objectifDate.getTime() -
-        maintenant.getTime();
+  if (difference <= 0) {
+    return "Objectif atteint";
+  }
 
-    if (difference <= 0) {
-        return "Objectif atteint";
-    }
+  const jours = Math.ceil(
+    difference / (1000 * 60 * 60 * 24)
+  );
 
-    const jours = Math.ceil(
-        difference /
-        (1000 * 60 * 60 * 24)
-    );
+  const mois = Math.floor(jours / 30);
+  const joursRestants = jours % 30;
 
-    if (jours < 30) {
+  if (mois === 0) {
+    return jours + (jours > 1 ? " jours restants" : " jour restant");
+  }
 
-        return jours +
-            (jours > 1
-                ? " jours restants"
-                : " jour restant");
-    }
+  if (joursRestants === 0) {
+    return mois + (mois > 1 ? " mois restants" : " mois restant");
+  }
 
-    const mois =
-        Math.floor(jours / 30);
-
-    const joursRestants =
-        jours % 30;
-
-    if (joursRestants === 0) {
-
-        return mois +
-            (mois > 1
-                ? " mois restants"
-                : " mois restant");
-    }
-
-    return mois +
-        " mois · " +
-        joursRestants +
-        (joursRestants > 1
-            ? " jours restants"
-            : " jour restant");
+  return mois + " mois · " +
+         joursRestants +
+         (joursRestants > 1 ? " jours restants" : " jour restant");
 }
-
-
-/* ==========================================
-   MISE À JOUR
-   ========================================== */
 
 function mettreAJour() {
 
-    const progression =
-        calculerProgression();
+  const progression = calculerProgression();
 
-    document.getElementById(
-        "pourcentage"
-    ).textContent =
-        Math.round(progression) + "%";
+  document.getElementById("pourcentage").textContent =
+    Math.round(progression) + "%";
 
-    document.getElementById(
-        "barre"
-    ).style.width =
-        progression + "%";
+  document.getElementById("barre").style.width =
+    progression + "%";
 
-    document.getElementById(
-        "temps-restant"
-    ).textContent =
-        calculerTempsRestant();
+  document.getElementById("temps-restant").textContent =
+    calculerTempsRestant();
 }
-
-
-/* ==========================================
-   LANCEMENT
-   ========================================== */
 
 mettreAJour();
 
-setInterval(
-    mettreAJour,
-    60 * 60 * 1000
-);
+setInterval(mettreAJour, 60 * 60 * 1000);
 
 </script>
 
