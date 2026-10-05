@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 
 * {
@@ -196,15 +196,25 @@ body {
 </div>
     
 <script>
+    
+const SUPABASE_URL = "https://qogovmyyjjjukxmqumtl.supabase.co";
+const SUPABASE_KEY = "sb_publishable_PO9CHcn3ke4VQyqQszCMcg_Csc-x2e_";
 
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+    
 const params = new URLSearchParams(window.location.search);
 
-const titre = params.get("course") || "Tour des Glaciers de la Vanoise";
-const distance = params.get("distance") || "73";
-const dplus = params.get("dplus") || "3800";
-const dmoins = params.get("dmoins") || "3800";
-const dateDebut = params.get("debut") || "2026-11-02";
-const dateObjectif = params.get("objectif") || "2027-07-04";
+const objectifId = params.get("id");
+
+let titre = "Tour des Glaciers de la Vanoise";
+let distance = "73";
+let dplus = "3800";
+let dmoins = "3800";
+let dateDebut = "2026-11-02";
+let dateObjectif = "2027-07-04";
 
 document.querySelector(".titre").textContent = titre;
 
