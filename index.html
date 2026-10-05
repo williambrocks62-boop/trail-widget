@@ -209,6 +209,9 @@ const params = new URLSearchParams(window.location.search);
 
 const objectifId = params.get("id");
 
+console.log("TEST WIDGET");
+console.log("ID objectif :", objectifId);
+
 async function chargerObjectif() {
 
   if (!objectifId) return;
