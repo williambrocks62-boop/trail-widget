@@ -226,14 +226,23 @@ async function chargerObjectif() {
     console.error("Erreur Supabase :", error);
     return;
   }
-    
-document.querySelector(".titre").textContent = data.course;
 
-document.querySelector(".details").innerHTML = `
-  <span>${data.distance} km</span>
-  <span>${Number(data.dplus).toLocaleString("fr-FR")} m D+</span>
-  <span>${Number(data.dmoins).toLocaleString("fr-FR")} m D-</span>
-`;
+  // Récupération des données depuis Supabase
+  document.querySelector(".titre").textContent = data.course;
+
+  document.querySelector(".details").innerHTML = `
+    <span>${data.distance} km</span>
+    <span>${Number(data.dplus).toLocaleString("fr-FR")} m D+</span>
+    <span>${Number(data.dmoins).toLocaleString("fr-FR")} m D-</span>
+  `;
+
+  // Récupération des dates
+  dateDebut = data.date_debut;
+  dateObjectif = data.date_objectif;
+
+  // Mise à jour du widget
+  mettreAJour();
+
   console.log("Objectif récupéré :", data);
 }
     
